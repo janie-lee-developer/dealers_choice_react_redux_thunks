@@ -1,5 +1,5 @@
 //db
-const { models: { Category, Stock } } = require('../db/index');
+const { Op, models: { Category, Stock } } = require('../db/index');
 
 //router
 const router = require('express').Router();
@@ -50,3 +50,23 @@ router.get('/rand', async (req, res, next) => {
     }
 });
 
+// router.get('/metals', async (req, res, next) => {
+//     try{
+//         const response = await Category.findAll({
+//             include: {
+//                 model: Stock,
+//                 as: 'stocks',
+//             },
+//             where: {
+//                 name: {
+//                     [Op.like]: '%Metals%'
+//                 }
+//             }
+//         });
+
+//         res.json(response);
+//     }
+//     catch(ex){
+//         next(ex)
+//     }
+// })

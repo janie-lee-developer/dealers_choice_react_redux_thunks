@@ -1,6 +1,7 @@
 const conn = require('./conn');
 const Category = require('./Category');
 const Stock = require('./Stock');
+const { Op } = conn.Sequelize;
 
 //Associations
 Stock.belongsTo(Category); //categoryId
@@ -33,6 +34,7 @@ const syncAndSeed = async () => {
 }
 
 module.exports = {
+    Op,
     conn,
     syncAndSeed,
     models: {
