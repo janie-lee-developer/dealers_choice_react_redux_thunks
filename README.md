@@ -2,7 +2,8 @@
 react_redux_thunks_sequelize_psql_webpack
 
 1. npm i
-2. npm run start:dev
+2. localhost:3001
+3. npm run start:dev
 
 ### ETF Traders.com
 1. uses redux store
