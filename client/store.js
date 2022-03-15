@@ -22,9 +22,9 @@ const initialState = {
 // reducer
 const rootReducer = (state = initialState, action) => {
     if (action.type === 'LOAD') {
-        console.log('load entered', action.data)
+        console.log('test: before load', state)
         state.stocks = action.data;
-        console.log('after loaddddd', state.stocks);
+        console.log('test: after load', state);
     }
     if (action.type === 'LOAD_RANDOM') {
         state.stocks = action.data;
@@ -45,7 +45,7 @@ const rootReducer = (state = initialState, action) => {
         state.energy = []
     }
     
-    console.log('final state', state);
+    console.log('final state', state.stocks);
     return state;
 }
 

@@ -18,18 +18,74 @@ let intAgri;
 let intEnergy;
 let intrand;
 
+const filterMetals = () => {
+    clearInterval(intAgri);
+    clearInterval(intEnergy);
+
+    // imediate filter
+    let metals = this.state.stocks.filter(categoryObj => {
+        return categoryObj.name === 'Precious Metals'
+    });
+    store.dispatch({ type: 'FILTER_METALS', data: [...metals] });
+
+    // every 1 second, pull out updated metal prices
+    intMetals = setInterval(() => {
+        metals = this.state.stocks.filter(categoryObj => {
+            return categoryObj.name === 'Precious Metals'
+        });
+        store.dispatch({ type: 'FILTER_METALS', data: [...metals] });
+    }, 1000);
+}
+
+const filterAgri = ()=> {
+    clearInterval(intMetals);
+    clearInterval(intEnergy);
+
+    // imediate filter before the first sec
+    let agri = this.state.stocks.filter(categoryObj => {
+        return categoryObj.name === 'Agricultural Commodities'
+    });
+    store.dispatch({ type: 'FILTER_AGRI', data: [...agri] });
+
+    // every 1 second, pull out updated agri prices
+    intAgri = setInterval(() => {
+        agri = this.state.stocks.filter(categoryObj => {
+            return categoryObj.name === 'Agricultural Commodities'
+        });
+        store.dispatch({ type: 'FILTER_AGRI', data: [...agri] });
+    }, 1000);
+}
+
+const filterEnergy = () => {
+    clearInterval(intMetals);
+    clearInterval(intAgri);
+
+    // imediate filter before the first sec
+    let energy = this.state.stocks.filter(categoryObj => {
+        return categoryObj.name === 'Energy'
+    });
+    store.dispatch({ type: 'FILTER_ENERGY', data: [...energy] });
+
+    // every 1 second, pull out updated energy prices
+    intEnergy = setInterval(() => {
+        energy = this.state.stocks.filter(categoryObj => {
+            return categoryObj.name === 'Energy'
+        });
+        store.dispatch({ type: 'FILTER_ENERGY', data: [...energy] })
+    }, 1000);
+}
+
 class _App extends Component {
-    constructor() {
-        super();
-        this.state = store.getState();
+    // constructor() {
+    //     super();
+    //     this.state = store.getState();
         
-        this.filterMetals = this.filterMetals.bind(this);
-        this.filterEnergy = this.filterEnergy.bind(this);
-        this.filterAgri = this.filterAgri.bind(this);
-    }
+    //     this.filterMetals = this.filterMetals.bind(this);
+    //     this.filterEnergy = this.filterEnergy.bind(this);
+    //     this.filterAgri = this.filterAgri.bind(this);
+    // }
 
-    async componentDidMount() {
-
+    componentDidMount() {
         // load initial stock prices
         this.props.load();
 
@@ -39,68 +95,14 @@ class _App extends Component {
         }, 3000)
         
         // react state subscribing to redux state
-        store.subscribe(()=> this.setState(store.getState()));
-    }
-
-    filterMetals(){
-        clearInterval(intAgri);
-        clearInterval(intEnergy);
-
-        // imediate filter
-        let metals = this.state.stocks.filter(categoryObj => {
-            return categoryObj.name === 'Precious Metals'
-        });
-        store.dispatch({ type: 'FILTER_METALS', data: [...metals] });
-
-        // every 1 second, pull out updated metal prices
-        intMetals = setInterval( () => {
-            metals = this.state.stocks.filter(categoryObj => {
-                return categoryObj.name === 'Precious Metals'
-            });
-            store.dispatch({ type: 'FILTER_METALS', data: [...metals]});
-        }, 1000);
-    }
-
-    filterAgri() {
-        clearInterval(intMetals);
-        clearInterval(intEnergy);
-
-        // imediate filter before the first sec
-        let agri = this.state.stocks.filter(categoryObj => {
-            return categoryObj.name === 'Agricultural Commodities'
-        });
-        store.dispatch({ type: 'FILTER_AGRI', data: [...agri] });
-
-        // every 1 second, pull out updated agri prices
-        intAgri = setInterval(() => {
-            agri = this.state.stocks.filter(categoryObj => {
-                return categoryObj.name === 'Agricultural Commodities'
-            });
-            store.dispatch({ type: 'FILTER_AGRI', data: [...agri] });
-        }, 1000);
-    }
-
-    filterEnergy() {
-        clearInterval(intMetals);
-        clearInterval(intAgri);
-
-        // imediate filter before the first sec
-        let energy = this.state.stocks.filter(categoryObj => {
-            return categoryObj.name === 'Energy'
-        });
-        store.dispatch({ type: 'FILTER_ENERGY', data: [...energy]});
-
-        // every 1 second, pull out updated energy prices
-        intEnergy = setInterval(() => {
-            energy = this.state.stocks.filter(categoryObj => {
-                return categoryObj.name === 'Energy'
-            });
-            store.dispatch({ type: 'FILTER_ENERGY', data: [...energy] })
-        }, 1000);
+        // store.subscribe(()=> this.setState(store.getState()));
     }
 
     render() {
-        const { stocks, metals, agri, energy } = this.state;
+        // const { stocks, metals, agri, energy } = this.props.data;
+        console.log('Test2', this.props.data);
+
+
 
         const Component = () => {
             if (metals.length > 0 && agri.length === 0 && energy.length === 0) return <StockList stocks={metals} filterMetals={this.filterMetals} />;
@@ -111,7 +113,8 @@ class _App extends Component {
 
         return (
             <div className='containerBody'>
-                <Nav filterMetals={this.filterMetals} filterAgri={this.filterAgri} filterEnergy={this.filterEnergy}/>
+                {this.props.data.stocks.map(stock => { <a>{stock.name}</a> })}
+                {/* <Nav filterMetals={this.filterMetals} filterAgri={this.filterAgri} filterEnergy={this.filterEnergy}/>
                 <Component />
                 <div className='userBox'>
                     <div className='categoryHeader'>
@@ -125,20 +128,21 @@ class _App extends Component {
                         <li>Total Assets: $ </li>
                         <li>Assets Breakdown: </li>
                     </ul>
-                </div>   
+                </div>    */}
             </div>
         )
     }
 }
 
+
 const App = connect(
-    state => state,
+    state => ({ data: state }),
     (dispatch) => {
         return {
-            load: async() => {
+            load: () => {
                 dispatch(loadStocks());
             },
-            loadRand: async() => {
+            loadRand: () => {
                 dispatch(loadRandStocks());
             }
         }

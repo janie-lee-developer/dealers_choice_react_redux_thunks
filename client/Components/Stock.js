@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Stock = ({ stock }) => {
+const Stock = ({stock}) => {
     // const removeRestButtons = (e) => {
     //     console.log('The button clicked', e)
     //     e.target.className = 'clickedAddBttn';
