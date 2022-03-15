@@ -1,90 +1,145 @@
+// react
 import React, { Component } from 'react';
-import axios from 'axios';
-// import faker from 'faker';
+
+// children components
 import StockList from './Components/StockList';
 import Nav from './Components/Nav';
 
+// redux
+import { connect } from 'react-redux';
+import store from './store';
+
+// thunks
+import { loadStocks, loadRandStocks  } from './store';
+
+// interval keys
 let intMetals;
 let intAgri;
+let intEnergy;
+let intrand;
 
-
-class App extends Component {
+class _App extends Component {
     constructor() {
         super();
-        this.state = {
-           stocks : [],
-           metals: [],
-           agri: []
-        }
-        this.loadApiMetals = this.loadApiMetals.bind(this);
-        // this.loadApiEnergy = this.loadApiEnergy.bind(this);
-        this.loadApiAgri = this.loadApiAgri.bind(this);
+        this.state = store.getState();
+        
+        this.filterMetals = this.filterMetals.bind(this);
+        this.filterEnergy = this.filterEnergy.bind(this);
+        this.filterAgri = this.filterAgri.bind(this);
     }
 
     async componentDidMount() {
-        const response = (await axios.get('/api/stocks')).data;
-        this.setState({ stocks : response });
 
-        setInterval(async ()=>{
-            const responsee = (await axios.get('api/stocks/rand')).data;
-            console.log(responsee);
-            this.setState({ stocks: responsee });
+        // load initial stock prices
+        this.props.load();
+
+        // generates new random prices every 1 second
+        intrand = setInterval(async () => {
+            this.props.loadRand();
         }, 1000)
+        
+        // react state subscribing to redux state
+        store.subscribe(()=> this.setState(store.getState()));
     }
 
-    loadApiMetals(){
+    filterMetals(){
         clearInterval(intAgri);
-        this.setState({ agri: [] });
+        clearInterval(intEnergy);
 
-        const metalss = this.state.stocks.filter(categoryObj => {
+        // imediate filter
+        let metals = this.state.stocks.filter(categoryObj => {
             return categoryObj.name === 'Precious Metals'
         });
-        this.setState({ metals: [...metalss] });
+        store.dispatch({ type: 'FILTER_METALS', data: [...metals] });
 
+        // every 1 second, pull out updated metal prices
         intMetals = setInterval( () => {
-            const metals = this.state.stocks.filter(categoryObj => {
+            metals = this.state.stocks.filter(categoryObj => {
                 return categoryObj.name === 'Precious Metals'
             });
-            this.setState({ metals: [...metals] });
+            store.dispatch({ type: 'FILTER_METALS', data: [...metals]});
         }, 1000);
     }
 
-    loadApiAgri() {
+    filterAgri() {
         clearInterval(intMetals);
-        this.setState({ metals: [] });
+        clearInterval(intEnergy);
 
-        const agri = this.state.stocks.filter(categoryObj => {
+        // imediate filter before the first sec
+        let agri = this.state.stocks.filter(categoryObj => {
             return categoryObj.name === 'Agricultural Commodities'
         });
-        this.setState({ agri: [...agri] });
+        store.dispatch({ type: 'FILTER_AGRI', data: [...agri] });
 
+        // every 1 second, pull out updated agri prices
         intAgri = setInterval(() => {
-            const agrii = this.state.stocks.filter(categoryObj => {
+            agri = this.state.stocks.filter(categoryObj => {
                 return categoryObj.name === 'Agricultural Commodities'
             });
-            this.setState({ agri: [...agrii]});
+            store.dispatch({ type: 'FILTER_AGRI', data: [...agri] });
         }, 1000);
-        
+    }
+
+    filterEnergy() {
+        clearInterval(intMetals);
+        clearInterval(intAgri);
+
+        // imediate filter before the first sec
+        let energy = this.state.stocks.filter(categoryObj => {
+            return categoryObj.name === 'Energy'
+        });
+        store.dispatch({ type: 'FILTER_ENERGY', data: [...energy]});
+
+        // every 1 second, pull out updated energy prices
+        intEnergy = setInterval(() => {
+            energy = this.state.stocks.filter(categoryObj => {
+                return categoryObj.name === 'Energy'
+            });
+            store.dispatch({ type: 'FILTER_ENERGY', data: [...energy] })
+        }, 1000);
     }
 
     render() {
-        const { stocks, metals, agri } = this.state
+        const { stocks, metals, agri, energy } = this.state;
 
         const Component = () => {
-            if (metals.length > 0 && agri.length === 0) return <StockList stocks={metals} />;
-            if (agri.length > 0 && metals.length === 0) return <StockList stocks={agri} />;
+            if (metals.length > 0 && agri.length === 0 && energy.length === 0) return <StockList stocks={metals} filterMetals={this.filterMetals} />;
+            if (agri.length > 0 && metals.length === 0 && energy.length === 0) return <StockList stocks={agri} filterAgri={this.filterAgri}/>;
+            if (energy.length > 0 && metals.length === 0 && agri.length === 0) return <StockList stocks={energy} filterEnergy={this.filterEnergy}/>;
             return <StockList stocks={stocks} />
         }
 
         return (
-            <div>
-                <Nav loadApiMetals={this.loadApiMetals} loadApiAgri={this.loadApiAgri} />
-                <Component />   
+            <div className='containerBody'>
+                <Nav filterMetals={this.filterMetals} filterAgri={this.filterAgri} filterEnergy={this.filterEnergy}/>
+                <Component />
+                <div className='userBox'>
+                    <div className='categoryHeader'>
+                        Welcome, user1
+                    </div>
+                    <ul>
+                        <li>Available Funds: $ </li>
+                        <li>Total Assets: $ </li>
+                        <li>Assets Breakdown: </li>
+                    </ul>
+                </div>   
             </div>
         )
     }
 }
 
-export default App;
+const App = connect(
+    state => state,
+    (dispatch) => {
+        return {
+            load: async() => {
+                dispatch(loadStocks());
+            },
+            loadRand: async() => {
+                dispatch(loadRandStocks());
+            }
+        }
+    }
+)(_App);
 
-// loadApiEnergy={this.loadApiEnergy} 
+export default App;

@@ -1,16 +1,17 @@
 import React from 'react';
 
-const Nav = ({ loadApiMetals, loadApiAgri  }) => {
+const Nav = ({ filterMetals, filterAgri, filterEnergy }) => {
     return (
-        <ul className='navigation'>
-            <li onClick={() => loadApiMetals()}><a>Metals</a></li>
-            <li ><a>Energy</a></li>
-            <li onClick={() => loadApiAgri()}><a>Agricultural Commodities</a></li>
-            <li style={{ float: 'left' }}><a href='/'>ETF Traders.com</a></li>
-        </ul>
+            <ul className='navigation'>
+                <li className='navBttns' onClick={() => filterMetals()}><a>Metals</a></li>
+                <li className='navBttns' onClick={() => filterEnergy()}><a>Energy</a></li>
+                <li className='navBttns' onClick={() => filterAgri()}><a>Agricultural Commodities</a></li>
+                <li className='home'><a className='homeLink' href='/'>ETF Traders.com</a></li>
+            </ul>
     )
 }
 
 export default Nav;
 
 // , loadApiEnergy, loadApiAgri
+//style={{ float: 'left' }}

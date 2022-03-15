@@ -1,14 +1,16 @@
 import React from 'react';
 import Stock from './Stock';
 
-const Category = ({ category }) => {
+const Category = ({ category, buy }) => {
     return (
         <div className='categoryBox'>
-            <h2>Category: {category.name}</h2>
-            <hr />
+            <div className='categoryHeader'>
+                Category: {category.name}
+            </div>
             {
                 category.stocks.map(stock => {
-                    return <Stock key={stock.id} stock={stock}/>
+                    return <Stock key={stock.id} stock={stock} buy={buy}
+                    />
                 })
             }
         </div>
