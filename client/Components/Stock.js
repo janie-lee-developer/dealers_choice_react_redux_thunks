@@ -1,6 +1,14 @@
 import React from 'react';
 
-const Stock = ({ stock, buy }) => {
+const Stock = ({ stock }) => {
+    // const removeRestButtons = (e) => {
+    //     console.log('The button clicked', e)
+    //     e.target.className = 'clickedAddBttn';
+    //     let elements = document.getElementsByClassName('addBttn');
+    //     while (elements.length > 0 ) {
+    //         elements[0].parentNode.removeChild(elements[0]);
+    //     }
+    // }
     return (
         <div className='stockBox'>
             <h4>Item: {`${stock.name[0].toUpperCase()}${stock.name.slice(1)}`}</h4>
@@ -12,10 +20,10 @@ const Stock = ({ stock, buy }) => {
                         <i></i>
                 }
             </p>
-            {/* <form onSubmit={(e) => { e.preventDefault(); buy(e, stock) }}>
-                Number of Shares: <input type='number' name='nOfShare' placeholder='1'></input>
+            <form onSubmit={(e) => { e.preventDefault() }}>
+                Number of Shares: <input type='number' name='nOfShare' placeholder='1' min='0'></input>
                 <button>Buy</button>
-            </form> */}
+            </form>
         </div>
     )
 }

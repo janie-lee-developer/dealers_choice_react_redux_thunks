@@ -1,7 +1,8 @@
 import React from 'react';
 import Stock from './Stock';
 
-const Category = ({ category, buy }) => {
+const Category = ({ category}) => {
+
     return (
         <div className='categoryBox'>
             <div className='categoryHeader'>
@@ -9,7 +10,7 @@ const Category = ({ category, buy }) => {
             </div>
             {
                 category.stocks.map(stock => {
-                    return <Stock key={stock.id} stock={stock} buy={buy}
+                    return <Stock key={stock.id} stock={stock}
                     />
                 })
             }
@@ -18,3 +19,4 @@ const Category = ({ category, buy }) => {
 }
 
 export default Category;
+

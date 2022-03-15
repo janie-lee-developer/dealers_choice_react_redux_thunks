@@ -36,7 +36,7 @@ class _App extends Component {
         // generates new random prices every 1 second
         intrand = setInterval(async () => {
             this.props.loadRand();
-        }, 1000)
+        }, 3000)
         
         // react state subscribing to redux state
         store.subscribe(()=> this.setState(store.getState()));
@@ -117,6 +117,9 @@ class _App extends Component {
                     <div className='categoryHeader'>
                         Welcome, user1
                     </div>
+                    <p>
+                        Note: Every 3 seconds the market refreshes. Purchase must be made within the 3 seconds in order to reserve the price you see in the market.
+                    </p>
                     <ul>
                         <li>Available Funds: $ </li>
                         <li>Total Assets: $ </li>
