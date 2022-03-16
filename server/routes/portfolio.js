@@ -10,9 +10,9 @@ router.post('/', async (req, res, next) => {
         // assigining an asset to a user
         const { categoryName, stockName, stockPrice, nOfShare } = req.body;
 
-        const newAsset = await Asset.create({ name: stockName, boughtPrice: stockPrice, nOfBoughtShares: nOfShare, categoryName});
+        const newAsset = await Asset.create({ name: stockName, boughtPrice: stockPrice, nOfBoughtShares: nOfShare, categoryName });
         const users = await User.findAll();
-        
+
         newAsset.userId = users[0].id;
         newAsset.save();
         res.send(newAsset);
@@ -22,7 +22,7 @@ router.post('/', async (req, res, next) => {
     }
 });
 
-router.get('/', async(req, res, next) => {
+router.get('/', async (req, res, next) => {
     try {
         const portfolio = await User.findAll({
             include: [
@@ -31,8 +31,25 @@ router.get('/', async(req, res, next) => {
         });
         res.send(portfolio);
     }
-    catch(ex){
+    catch (ex) {
         next(ex);
     }
-})
+});
+
+router.delete('/:id', async (req, res, next) => {
+    try {
+        console.log('************', req.params.id);
+        const asset = await Asset.findByPk(req.params.id);
+        await asset.destroy();
+        res.sendStatus(204);
+    }
+    catch (ex) {
+        next(ex);
+    }
+});
+
+
+
+
+
 

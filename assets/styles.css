@@ -2,12 +2,6 @@ body {
   margin: 0;
 }
 
-div.containerBody {
-  /* display: flex;
-  flex-direction: row; */
-  width: 100%;
-}
-
 /* nav bar styling */
 ul.navigation {
   border-bottom: rgb(169, 169, 169) solid 1px;
@@ -52,7 +46,20 @@ li a:hover:not(.active) {
   background-color: #04AA6D;
 }
 
-/* stock list styling */
+/* stock market list body */
+div.containerBody {
+  width: 100%;
+}
+
+div.categoryHeader {
+  margin-top: 0;
+  padding: 7px 0;
+  font-size: 1.2em;
+  color: goldenrod;
+  background-color: #333;
+  padding-left: 7px;
+}
+
 .triangle {
     width: 15px;
     margin: 0px 10px;
@@ -60,7 +67,6 @@ li a:hover:not(.active) {
 
 div.stockList {
   margin-top: 55px;
-  /* flex-grow: 2; */
   width: 70%;
 }
 
@@ -71,13 +77,11 @@ div.stockList {
   margin-top: 0;
 }
 
-/* stock cateogry box styling */
-/* div.categoryBox {
-  border: gray 1px solid;
-} */
+
+
+/* user portfolio box */
 div.userBox {
   margin-top: 54px;
-  /* flex-grow: 1; */
   border: rgb(169, 169, 169) solid 1px;
   background-color: white;
   position: fixed;
@@ -86,19 +90,18 @@ div.userBox {
   top: 0px;
   z-index: 1;
 }
-div.categoryHeader {
-  margin-top: 0;
-  padding: 7px 0;
-  font-size: 1.2em;
-  color: goldenrod;
-  background-color: #333;
-  padding-left: 7px;
-}
-div.asset {
-    border: rgb(169, 169, 169) solid 1px;
-    margin: 5px;
-}
+
 .userNote {
   padding-left: 10px;
 }
 
+div.asset {
+    border: rgb(169, 169, 169) solid 1px;
+    margin: 5px;
+}
+
+.sellBttn {
+  display: flex;
+  justify-content: center;
+  margin: 10px;
+}

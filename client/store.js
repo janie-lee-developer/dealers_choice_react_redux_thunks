@@ -10,51 +10,35 @@ import axios from 'axios';
 
 //initial state
 const initialState = {
-    //entire data
     stocks: [],
-    // categories
-    metals: [],
-    agri: [],
-    energy: [],
     assets: [],
-    user: {
-        fund: 100,
-        totalAsset: 0
-    },
-    test: 'Janie, redux is connected!..'
+    userFund: 500
 }
 
-// reducer
-const rootReducer = (state = initialState, action) => {
+// reducers
+const stockReducer = (state = initialState.stocks, action) => {
     if (action.type === 'LOAD') {
-        console.log('test: before load', state)
-        state = {...state, stocks: action.data }
-        console.log('test: after load', state);
+        return state = action.data
     }
     if (action.type === 'LOAD_RANDOM') {
-        state = { ...state, stocks: action.data }
+        return state = action.data
     }
-    if (action.type === 'FILTER_ENERGY') {
-        state = { ...state, stocks: action.data }
-        state.metals = [];
-        state.agri = [];
-    }
-    if (action.type === 'FILTER_AGRI') {
-        state = { ...state, stocks: action.data }
-        state.metals = [],
-        state.energy = []
-    }
-    if (action.type === 'FILTER_METALS') {
-        state = { ...state, stocks: action.data }
-        state.agri = [],
-        state.energy = []
-    }
-    if (action.type === 'ADD_ASSET') {
-        state = {...state, assets: [...state.assets, action.data]}
-    }
-    console.log('final state', state.stocks);
     return state;
 }
+
+const assetReducer = (state = initialState.assets, action) => {
+    if (action.type === 'ADD_ASSET') {
+        return state = [ ...state, action.data ]
+    }
+    if (action.type === 'SELL') {
+        return state = state.filter( asset => asset.id !== action.asset.id )
+    }
+    return state;
+}
+
+//combine reducers
+const reducer = combineReducers({ stocks: stockReducer, assets: assetReducer});
+
 
 // thunks
 const loadStocks = () => {
@@ -72,27 +56,35 @@ const loadRandStocks = () => {
 }
 
 const buyStock = (e, stockName, stockPrice, categoryName) => {
-    console.log('why is category an empty?', categoryName);
     let nOfShare = e.target.getElementsByTagName('input')[0].value;
     nOfShare === '' ? nOfShare = 1 : parseInt(nOfShare);
-    console.log('share number is', nOfShare)
+    console.log('number of shares bought is:', nOfShare)
 
     return async (dispatch) => {
         const response = (await axios.post(`/api/portfolio`, {
             categoryName, stockName, stockPrice, nOfShare
         })).data;
-        console.log('axiossss', response);
+        console.log('axios post return:', response);
         dispatch({ type: 'ADD_ASSET', data: response })
     }
 }
 
-const store = createStore(rootReducer, applyMiddleware(thunk));
+const sellAsset = (asset) => {
+    console.log('sell this asset:', asset);
+    return async(dispatch) => {
+        await axios.delete(`/api/portfolio/${asset.id}`);
+        dispatch({ type: 'SELL', asset })
+    }
+}
+
+const store = createStore(reducer, applyMiddleware(thunk));
 
 export default store;
 export {
     loadStocks,
     loadRandStocks,
-    buyStock
+    buyStock,
+    sellAsset
 }
 
 
