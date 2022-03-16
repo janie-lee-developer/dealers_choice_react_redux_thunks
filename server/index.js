@@ -5,6 +5,7 @@ const { syncAndSeed } = require('./db/index');
 const express = require('express');
 const { static } = express;
 const app = express();
+app.use(express.json());
 
 //path for static files
 const path = require('path');
@@ -20,6 +21,7 @@ app.use('/assets', express.static(path.join(__dirname, '../assets')));
 //routes
 app.get('/', (req, res, next)=> res.sendFile(path.join(__dirname, '../index.html')));
 app.use('/api/stocks', require('./routes/stocks_routes'));
+app.use('/api/portfolio', require('./routes/portfolio'));
 
 
 const init = async() => {

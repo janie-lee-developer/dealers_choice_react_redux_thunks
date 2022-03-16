@@ -10,7 +10,7 @@ const Category = ({ category}) => {
             </div>
             {
                 category.stocks.map(stock => {
-                    return <Stock key={stock.id} stock={stock}
+                    return <Stock key={stock.id} stock={stock} categoryName={category.name}
                     />
                 })
             }

@@ -18,72 +18,21 @@ let intAgri;
 let intEnergy;
 let intrand;
 
-const filterMetals = () => {
-    clearInterval(intAgri);
-    clearInterval(intEnergy);
-
-    // imediate filter
-    let metals = this.state.stocks.filter(categoryObj => {
-        return categoryObj.name === 'Precious Metals'
-    });
-    store.dispatch({ type: 'FILTER_METALS', data: [...metals] });
-
-    // every 1 second, pull out updated metal prices
-    intMetals = setInterval(() => {
-        metals = this.state.stocks.filter(categoryObj => {
-            return categoryObj.name === 'Precious Metals'
-        });
-        store.dispatch({ type: 'FILTER_METALS', data: [...metals] });
-    }, 1000);
-}
-
-const filterAgri = ()=> {
-    clearInterval(intMetals);
-    clearInterval(intEnergy);
-
-    // imediate filter before the first sec
-    let agri = this.state.stocks.filter(categoryObj => {
-        return categoryObj.name === 'Agricultural Commodities'
-    });
-    store.dispatch({ type: 'FILTER_AGRI', data: [...agri] });
-
-    // every 1 second, pull out updated agri prices
-    intAgri = setInterval(() => {
-        agri = this.state.stocks.filter(categoryObj => {
-            return categoryObj.name === 'Agricultural Commodities'
-        });
-        store.dispatch({ type: 'FILTER_AGRI', data: [...agri] });
-    }, 1000);
-}
-
-const filterEnergy = () => {
-    clearInterval(intMetals);
-    clearInterval(intAgri);
-
-    // imediate filter before the first sec
-    let energy = this.state.stocks.filter(categoryObj => {
-        return categoryObj.name === 'Energy'
-    });
-    store.dispatch({ type: 'FILTER_ENERGY', data: [...energy] });
-
-    // every 1 second, pull out updated energy prices
-    intEnergy = setInterval(() => {
-        energy = this.state.stocks.filter(categoryObj => {
-            return categoryObj.name === 'Energy'
-        });
-        store.dispatch({ type: 'FILTER_ENERGY', data: [...energy] })
-    }, 1000);
-}
 
 class _App extends Component {
-    // constructor() {
-    //     super();
-    //     this.state = store.getState();
+    constructor() {
+        super();
+        this.state = {
+            user: {
+                fund: 100,
+                totalAsset: 0
+            }
+        }
         
-    //     this.filterMetals = this.filterMetals.bind(this);
-    //     this.filterEnergy = this.filterEnergy.bind(this);
-    //     this.filterAgri = this.filterAgri.bind(this);
-    // }
+        this.filterMetals = this.filterMetals.bind(this);
+        this.filterEnergy = this.filterEnergy.bind(this);
+        this.filterAgri = this.filterAgri.bind(this);
+    }
 
     componentDidMount() {
         // load initial stock prices
@@ -98,11 +47,69 @@ class _App extends Component {
         // store.subscribe(()=> this.setState(store.getState()));
     }
 
+    filterMetals() {
+        clearInterval(intAgri);
+        clearInterval(intEnergy);
+
+        // imediate filter
+        let metals = this.state.stocks.filter(categoryObj => {
+            return categoryObj.name === 'Precious Metals'
+        });
+        store.dispatch({ type: 'FILTER_METALS', data: [...metals] });
+
+        // every 1 second, pull out updated metal prices
+        intMetals = setInterval(() => {
+            metals = this.state.stocks.filter(categoryObj => {
+                return categoryObj.name === 'Precious Metals'
+            });
+            store.dispatch({ type: 'FILTER_METALS', data: [...metals] });
+        }, 1000);
+    }
+
+    filterAgri() {
+        clearInterval(intMetals);
+        clearInterval(intEnergy);
+
+        // imediate filter before the first sec
+        let agri = this.state.stocks.filter(categoryObj => {
+            return categoryObj.name === 'Agricultural Commodities'
+        });
+        store.dispatch({ type: 'FILTER_AGRI', data: [...agri] });
+
+        // every 1 second, pull out updated agri prices
+        intAgri = setInterval(() => {
+            agri = this.state.stocks.filter(categoryObj => {
+                return categoryObj.name === 'Agricultural Commodities'
+            });
+            store.dispatch({ type: 'FILTER_AGRI', data: [...agri] });
+        }, 1000);
+    }
+
+    filterEnergy() {
+        clearInterval(intMetals);
+        clearInterval(intAgri);
+
+        // imediate filter before the first sec
+        let energy = this.state.stocks.filter(categoryObj => {
+            return categoryObj.name === 'Energy'
+        });
+        store.dispatch({ type: 'FILTER_ENERGY', data: [...energy] });
+
+        // every 1 second, pull out updated energy prices
+        intEnergy = setInterval(() => {
+            energy = this.state.stocks.filter(categoryObj => {
+                return categoryObj.name === 'Energy'
+            });
+            store.dispatch({ type: 'FILTER_ENERGY', data: [...energy] })
+        }, 1000);
+    }
+
     render() {
-        // const { stocks, metals, agri, energy } = this.props.data;
-        console.log('Test2', this.props.data);
+        // redux store
+        const { stocks, metals, agri, energy, assets, user } = this.props;
 
-
+        // react state
+        const { fund, totalAsset } = this.state.user;
 
         const Component = () => {
             if (metals.length > 0 && agri.length === 0 && energy.length === 0) return <StockList stocks={metals} filterMetals={this.filterMetals} />;
@@ -113,22 +120,38 @@ class _App extends Component {
 
         return (
             <div className='containerBody'>
-                {this.props.data.stocks.map(stock => { <a>{stock.name}</a> })}
-                {/* <Nav filterMetals={this.filterMetals} filterAgri={this.filterAgri} filterEnergy={this.filterEnergy}/>
+                <Nav filterMetals={this.filterMetals} filterAgri={this.filterAgri} filterEnergy={this.filterEnergy}/>
                 <Component />
                 <div className='userBox'>
                     <div className='categoryHeader'>
                         Welcome, user1
                     </div>
-                    <p>
+                    <p className='userNote'>
                         Note: Every 3 seconds the market refreshes. Purchase must be made within the 3 seconds in order to reserve the price you see in the market.
                     </p>
                     <ul>
-                        <li>Available Funds: $ </li>
-                        <li>Total Assets: $ </li>
-                        <li>Assets Breakdown: </li>
+                        <li>Available Funds: $ {fund}</li>
+                        <li>Total Assets: $ {totalAsset}</li>
+                        <li>Assets Breakdown: {
+                            assets.map(asset => {
+                                return <div key={asset.id} className='asset'>
+                                    <ul>
+                                        <li>Category: {asset.categoryName}</li>
+                                        <li>Item: {asset.name}</li>
+                                        <li>Time Purchased: {new Date(asset.updatedAt).toLocaleString()}</li>
+                                        <li>Price Bought at: $ {parseFloat(asset.boughtPrice)}</li>
+                                        <li>Number of Shares Owned: {asset.nOfBoughtShares}</li>
+                                        <li>Current Value: $ {
+                                            (stocks.filter(categoryObj => categoryObj.name === asset.categoryName)[0].stocks.filter(stock=>{
+                                                return stock.name === asset.name
+                                            })[0].price) * asset.nOfBoughtShares
+                                        }</li>
+                                    </ul>
+                                </div>
+                            })
+                        }</li>
                     </ul>
-                </div>    */}
+                </div>   
             </div>
         )
     }
@@ -136,7 +159,7 @@ class _App extends Component {
 
 
 const App = connect(
-    state => ({ data: state }),
+    state => state,
     (dispatch) => {
         return {
             load: () => {

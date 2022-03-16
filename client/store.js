@@ -5,7 +5,7 @@ import { combineReducers } from 'redux';
 
 // thunks
 import { applyMiddleware } from 'redux';
-import thunks from 'redux-thunk';
+import thunk from 'redux-thunk';
 import axios from 'axios';
 
 //initial state
@@ -16,6 +16,11 @@ const initialState = {
     metals: [],
     agri: [],
     energy: [],
+    assets: [],
+    user: {
+        fund: 100,
+        totalAsset: 0
+    },
     test: 'Janie, redux is connected!..'
 }
 
@@ -23,28 +28,30 @@ const initialState = {
 const rootReducer = (state = initialState, action) => {
     if (action.type === 'LOAD') {
         console.log('test: before load', state)
-        state.stocks = action.data;
+        state = {...state, stocks: action.data }
         console.log('test: after load', state);
     }
     if (action.type === 'LOAD_RANDOM') {
-        state.stocks = action.data;
+        state = { ...state, stocks: action.data }
     }
     if (action.type === 'FILTER_ENERGY') {
-        state.energy = action.data;
+        state = { ...state, stocks: action.data }
         state.metals = [];
         state.agri = [];
     }
     if (action.type === 'FILTER_AGRI') {
-        state.agri = action.data;
+        state = { ...state, stocks: action.data }
         state.metals = [],
         state.energy = []
     }
     if (action.type === 'FILTER_METALS') {
-        state.metals = action.data;
+        state = { ...state, stocks: action.data }
         state.agri = [],
         state.energy = []
     }
-    
+    if (action.type === 'ADD_ASSET') {
+        state = {...state, assets: [...state.assets, action.data]}
+    }
     console.log('final state', state.stocks);
     return state;
 }
@@ -64,12 +71,28 @@ const loadRandStocks = () => {
     }
 }
 
-const store = createStore(rootReducer, applyMiddleware(thunks));
+const buyStock = (e, stockName, stockPrice, categoryName) => {
+    console.log('why is category an empty?', categoryName);
+    let nOfShare = e.target.getElementsByTagName('input')[0].value;
+    nOfShare === '' ? nOfShare = 1 : parseInt(nOfShare);
+    console.log('share number is', nOfShare)
+
+    return async (dispatch) => {
+        const response = (await axios.post(`/api/portfolio`, {
+            categoryName, stockName, stockPrice, nOfShare
+        })).data;
+        console.log('axiossss', response);
+        dispatch({ type: 'ADD_ASSET', data: response })
+    }
+}
+
+const store = createStore(rootReducer, applyMiddleware(thunk));
 
 export default store;
 export {
     loadStocks,
-    loadRandStocks
+    loadRandStocks,
+    buyStock
 }
 
 
